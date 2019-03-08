@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Dictionary & Thesaurus</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <!-- DICTIONARY: 64b20d2c-0314-4114-a847-e26e8f41b7f3 -->
+    <!-- THESAURUS: 3974ead3-f06c-4c9b-a273-73bf7e7fb8aa -->
+  </head>
+  <body>
+
+      <h1 class="head"><i>TLY Dictionary and Thesaurus</i></h1><br/>
+
+      <div id=app>
+        <div v-if="loaded" class="search">
+          <form v-on:submit.prevent="getWord" >
+            <input v-model="id" placeholder="Enter a word. . .">
+            <button type="submit">Define</button>
+          </form>
+        </div>
+        <div v-else class="container help">
+          <h1>{{id}}  <span class=follow>{{fl}}</span></h1>
+            <div class="data">
+              <h2>Definitions</h2>
+              <ol>
+                <li v-for="def in defs">{{def}}</li>
+              </ol>
+              <h2>Synonyms</h2>
+              <ul>
+                <li v-for="syn in syns">{{syn}}</li>
+              </ul>
+            </div>
+          <div>
+            <div v-if="helpful && critique">
+              <h5>Was this definition helpful?</h5>
+              <button @click="yes">Yes</button>
+              <button @click="no">No</button>
+            </div>
+            <div v-if="helpful && !critique">
+              <h5>Please help us understand your troubles.</h5>
+              <form v-on:submit.prevent="negative">
+                <textarea v-model="addedComment"></textarea>
+                <br/>
+                <button type="submit">Submit</button>
+              </form>
+              <br/>
+              <h6>Other Comments</h6>
+              <div v-for="comment in comments[id]">
+                <hr>
+                <p>{{comment.text}}</p>
+                <p>{{comment.time}}</p>
+              </div>
+            </div>
+            <div v-if="critique && !helpful">
+              <h5>We're so glad. Please try another word!</h5>
+            </div>
+          </div>
+          <br/>
+          <button @click="newWord" class="newButton">Try another word?</button>
+        </div>
+      </div>
+
+  </body>
+  <footer class="footer">
+    <div class="container">
+      <a href="">Visit my Github repository!</a>
+    </div>
+  </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.2/dist/vue.js"></script>
+    <script src="https://momentjs.com/downloads/moment.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script text="type/javascript" src="script.js"></script>
+</html>
