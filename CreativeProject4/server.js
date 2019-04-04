@@ -18,52 +18,73 @@ mongoose.connect('mongodb://localhost:27017/journal', {
 
 const multer = require('multer')
 const upload = multer({
-  dest: '/public/entries',
+  dest: './public/entries/',
   limits: {
-    fileSize: 10000000
+    fileSize: 100000000
   }
 });
 
-// Create a scheme for journal entries.
 const entrySchema = new mongoose.Schema({
   date: String,
-  entry: String,
-  path: String,
+  title: String,
+  description: String,
 });
 
-// Create a model for items in the journal
 const Entry = mongoose.model('Entry', entrySchema);
 
-// Upload an entry. Uses multer middleware for the upload and then returns
-// the path where the entry is stored in the file system.
-app.post('/api/entries', upload.single('page'), async (req, res) => {
-  if (!req.file) {
-    return res.sendStatus(400);
-  }
-  res.send({
-    path: "/page/" + req.file.filename
-  });
-});
-
-// Create a new entry.
 app.post('/api/entries', async (req, res) => {
-  const item = new Item({
+  const entry = new Entry({
     date: req.body.date,
-    entry: req.body.entry,
-    path: req.body.path,
+    title: req.body.title,
+    description: req.body.description
   });
-
   try {
-    await item.sve();
-    res.send(item);
+    await entry.save();
+    res.send(entry);
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
   }
 });
 
+app.get('/api/entries', async (req, res) => {
+  try {
+    let entries = await Entry.find();
+    res.send(entries);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+});
 
+app.delete('/api/entries/:id', async (req, res) => {
+  console.log("DELETE");
+  try {
+    await Entry.deleteOne({
+      _id: req.params.id
+    });
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+});
 
+app.put('/api/entries/:id', async (req, res) => {
+  console.log("EDIT");
+  try {
+    const entry = await Entry.findOne({
+      _id: req.params.id
+    });
+    entry.date = req.body.date;
+    entry.title = req.body.title;
+    entry.description = req.body.description;
+    await entry.save();
+    res.send(entry);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+});
 
-
-app.listen(3000, () => console.log('Server listening on port 3000!'));
+app.listen(3001, () => console.log('Server listening on port 3001!'));

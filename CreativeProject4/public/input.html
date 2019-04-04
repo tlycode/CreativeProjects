@@ -1,49 +1,88 @@
 <!DOCTYPE html>
-<html>
-
+<html lang='en'>
 <head>
-  <title>Entry Page</title>
+  <title>Journal Page</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </head>
-
 <body class="bg-1">
-    <nav class="navbar navbar-inverse">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="index.html">Joseph Ketner</a>
-        </div>
-        <div class="collapse navbar-collapse" id="myNavbar">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="entry.html">Entries</a></li>
-            <li><a href="input.html">Input Page</a></li>
-          </ul>
+  <div id="input">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Joseph Ketner</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+          <a class="nav-item nav-link" href="entry.html">Entries</a>
+          <a class="nav-item nav-link active" href="input.html">Edit</a>
         </div>
       </div>
     </nav>
     <div class="container-fluid">
-      <h1>New Journal Entry</h1>
-      <div>
-        <div>
-          <input class="form-control" placeholder="Date">
-          <input class="form-control" placeholder="Title">
-          <textarea class="form-control" placeholder="New Entry..."></textarea>
+      <h1>Journal: New Entry Page</h1>
+      <div class="dropdown">
+        <!--
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dropdown
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+          <button class="dropdown-item" type="button">Record New</button>
+          <button class="dropdown-item" type="button">Edit Existing</button>
+          <button class="dropdown-item" type="button">Delete</button>
         </div>
+        -->
+      </div>
+      <div >
+        <p></p>
+        <h2>Record New Entry</h2>
+        <input v-model="date" class="form-control" placeholder="Date..">
+        <input v-model="title" class="form-control" placeholder="Title..">
+        <textarea v-model="description" class="form-control" placeholder="Entry.."></textarea>
+        <p></p>
+        <button class="btn btn-secondary" @click="upload">Upload</button>
       </div>
     </div>
-
-
+    <div class="container-fluid">
+      <hr>
+      <h2>Edit/Delete an Item</h2>
+      <div>
+        <div v-if="entries.length > 0">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Select Entry
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <div v-for="entry in entries" @click="selectEntry(entry)">
+              <button class="dropdown-item" type="button">{{entry.date}}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="findEntry">
+        <h4>Please check info to ensure correct entry. Edit data if needed before clicking "Edit" button.</h4>
+        <p></p>
+        <input class="form-control" v-model="findEntry.date">
+        <input class="form-control" v-model="findEntry.title">
+        <textarea class="form-control" v-model="findEntry.description"></textarea>
+        <p></p>
+      </div>
+      <div v-if="findEntry">
+        <button class="btn btn-secondary" @click="editEntry(findEntry)">Edit</button>
+        <button class="btn btn-secondary" @click="deleteEntry(findEntry)">Delete</button>
+      </div>
+    </div>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js" integrity="sha256-mpnrJ5DpEZZkwkE1ZgkEQQJW/46CSEh/STrZKOB/qoM=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.7/vue.js" integrity="sha256-g+Q8DFAmG5+eyRPSydX0LY4TfjsL11XSDrIGerbbEdA=" crossorigin="anonymous"></script>
+  <script src="/input.js"></script>
 </body>
 
 </html>
